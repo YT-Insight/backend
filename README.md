@@ -231,57 +231,22 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
 
 ```
 yt-insight-backend/
-├── api/
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── apps/
-│   ├── authentication/
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   └── tests.py
-│   ├── youtube_analysis/
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   ├── services.py
-│   │   └── tests.py
-│   ├── subscriptions/
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   └── tests.py
-│   └── users/
-│       ├── models.py
-│       ├── serializers.py
-│       ├── views.py
-│       ├── urls.py
-│       └── tests.py
-├── services/
-│   ├── youtube_client.py
-│   ├── ai_analysis.py
-│   └── stripe_client.py
-├── utils/
-│   ├── jwt_utils.py
-│   ├── validators.py
-│   └── helpers.py
-├── docs/
-│   ├── api_documentation.md
-│   ├── database_schema.md
-│   └── sprint_reports/
-├── tests/
-│   ├── integration/
-│   └── unit/
+├── config/                 # Настройки проекта (settings, wsgi, asgi)
+├── apps/                   # Django приложения (разделение по доменам)
+│   ├── users/              # Бывший 'accounts'. Всё про юзеров и аутентификацию
+│   ├── subscriptions/      # Бывший 'billing'. Планы, Stripe, лимиты
+│   └── analysis/           # Основное ядро: YouTube, AI, История
+├── services/               # <--- САМОЕ ВАЖНОЕ: Чистая бизнес-логика
+│   ├── youtube/            # Клиент для YouTube Data API
+│   ├── ai/                 # Клиент для OpenAI/Claude/Gemini
+│   └── payment/            # Логика работы со Stripe
+├── shared/                 # Общие утилиты
+│   ├── models.py           # Базовые абстрактные модели (UUID, Timestamps)
+│   ├── mixins.py           # Полезные миксины
+│   └── exceptions.py       # Кастомные ошибки
 ├── requirements.txt
 ├── manage.py
-├── .env.example
-├── .gitignore
-└── README.md
+└── .env
 ```
 
 ## 🔌 API Endpoints
