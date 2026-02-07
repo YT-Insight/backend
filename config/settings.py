@@ -9,13 +9,28 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+import os
 
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Environment Path
+ENV_FILE_PATH = BASE_DIR / '.env'
+load_dotenv(dotenv_path=ENV_FILE_PATH)
+
+# print(ENV_FILE_PATH) # to check environment
+# print("="*50)  
+# print("Checking environment variables...")
+# print("DATABASE_USER from .env:", os.getenv("DATABASE_USER"))
+# print("DATABASE_NAME from .env:", os.getenv("DATABASE_NAME"))
+# print("DATABASE_PASSWORD from .env:", os.getenv("DATABASE_PASSWORD"))
+# print("DATABASE_HOST from .env:", os.getenv("DATABASE_HOST"))
+# print("DATABASE_POST from .env:", os.getenv("DATABASE_PORT"))
+# print("="*50)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -32,6 +47,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "apps.users",
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +60,9 @@ INSTALLED_APPS = [
     "rest_framework",
     
     # applications
-    "apps.accounts"
+    "apps.common",
+    "apps.subscriptions",
+    "apps.analysis"
 ]
 
 MIDDLEWARE = [
@@ -81,8 +100,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DATABASE_NAME"),
+        'USER': os.getenv("DATABASE_USER"),
+        'PASSWORD' : os.getenv("DATABASE_PASSWORD"),
+        'HOST' : os.getenv("DATABASE_HOST"),
+        'PORT' : os.getenv("DATABASE_PORT"),
     }
 }
 
@@ -139,3 +162,5 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME" : timedelta(days=7),
     "AUTH_HEADER_TYPES" : ("Bearer",),
 }
+
+AUTH_USER_MODEL = "users.User"
