@@ -22,7 +22,7 @@ class Subscription(BaseModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     current_period_end = models.DateTimeField(null=True, blank=True)
 
-    def str(self):
+    def __str__(self):
         return f"{self.user.email} - {self.get_plan_display()}"
     
 class UsageLimit(BaseModel):
@@ -32,6 +32,6 @@ class UsageLimit(BaseModel):
     reset_at = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.user.email} - Usage: {self.videos_analyzed}/{self.videos_limit}"
+        return f"{self.user.email} - Usage: {self.video_analyzed}/{self.video_limit}"
     
     
