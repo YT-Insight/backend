@@ -1,5 +1,5 @@
 from apps.analysis.services.youtube_client import get_channel_info
-from apps.analysis.models import YoutubeAnalysis
+from yt_insight_current.apps.analysis.models.models import YoutubeAnalysis
 from apps.analysis.services.ai_service import analyze_channel
 
 def run_analysis(user, channel_url: str) -> dict:

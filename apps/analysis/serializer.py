@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.analysis.models import YoutubeAnalysis
+from yt_insight_current.apps.analysis.models.models import YoutubeAnalysis
 
 class AnalysisInputSerializer(serializers.Serializer):
     channel_url = serializers.URLField()
