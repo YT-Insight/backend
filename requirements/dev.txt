@@ -1,0 +1,6 @@
+-r base.txt
+
+pytest-django==4.8.0
+factory-boy==3.3.0
+Faker==24.0.0
+django-debug-toolbar==4.3.0

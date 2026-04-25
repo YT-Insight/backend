@@ -1,38 +1,38 @@
 from django.db import models
 
 from apps.common.models import BaseModel
-from apps.analysis.models.enums import (
-    SentimentChoices,
-    CategoryChoices
-)
+from apps.analysis.models.enums import SentimentChoices, CategoryChoices
 
 
 class AnalysisResult(BaseModel):
     analysis = models.OneToOneField(
-        "Analysis",
+        "analysis.Analysis",
         on_delete=models.CASCADE,
-        related_name="result"
+        related_name="result",
     )
     summary = models.TextField(blank=True)
     sentiment = models.CharField(
         max_length=20,
         choices=SentimentChoices.choices,
-        default=SentimentChoices.NEUTRAL
+        default=SentimentChoices.NEUTRAL,
     )
     audience_type = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"Result for {self.analysis}"
+        return f"Result for Analysis #{self.analysis_id}"
 
 
 class AnalysisTopic(BaseModel):
     analysis = models.ForeignKey(
-        "Analysis",
+        "analysis.Analysis",
         on_delete=models.CASCADE,
-        related_name="topics"
+        related_name="topics",
     )
     topic = models.CharField(max_length=255)
-    relevance_score = models.DecimalField(max_digits=5, decimal_places=2)
+    relevance_score = models.DecimalField(max_digits=4, decimal_places=2)
+
+    class Meta:
+        ordering = ["-relevance_score"]
 
     def __str__(self):
         return self.topic
@@ -40,16 +40,17 @@ class AnalysisTopic(BaseModel):
 
 class AnalysisQuestion(BaseModel):
     analysis = models.ForeignKey(
-        "Analysis",
+        "analysis.Analysis",
         on_delete=models.CASCADE,
-        related_name="questions"
+        related_name="questions",
     )
-    question = models.CharField(max_length=255)
+    question = models.CharField(max_length=500)
     answer = models.TextField(blank=True)
     category = models.CharField(
-        max_length=255,
+        max_length=50,
         choices=CategoryChoices.choices,
-        blank=True
+        default=CategoryChoices.CUSTOM,
+        blank=True,
     )
 
     def __str__(self):
@@ -58,16 +59,20 @@ class AnalysisQuestion(BaseModel):
 
 class AnalysisSuggestion(BaseModel):
     analysis = models.ForeignKey(
-        "Analysis",
+        "analysis.Analysis",
         on_delete=models.CASCADE,
-        related_name="suggestions"
+        related_name="suggestions",
     )
     suggestion = models.TextField()
     category = models.CharField(
-        max_length=255,
+        max_length=50,
         choices=CategoryChoices.choices,
-        blank=True
+        default=CategoryChoices.CONTENT,
+        blank=True,
     )
 
+    class Meta:
+        ordering = ["category"]
+
     def __str__(self):
-        return self.suggestion[:50]
+        return self.suggestion[:80]

@@ -1,4 +1,4 @@
-from .youtube import Channel, Video
+from .youtube import Channel, Video, Comment
 from .analysis import Analysis, AnalysisVideo
 from .insights import (
     AnalysisResult,
@@ -10,6 +10,7 @@ from .insights import (
 __all__ = [
     "Channel",
     "Video",
+    "Comment",
     "Analysis",
     "AnalysisVideo",
     "AnalysisResult",

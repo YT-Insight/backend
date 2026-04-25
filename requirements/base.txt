@@ -1,0 +1,19 @@
+Django==6.0.1
+djangorestframework==3.16.1
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.3.1
+psycopg2-binary==2.9.11
+python-dotenv==1.0.1
+
+# Async task queue
+celery[redis]==5.3.6
+redis==5.0.4
+
+# YouTube Data API
+google-api-python-client==2.118.0
+
+# AI (DeepSeek via OpenAI-compatible SDK)
+openai==2.32.0
+
+# Payments
+stripe==9.3.0
