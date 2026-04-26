@@ -70,6 +70,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "apps.users.clerk_auth.ClerkAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
@@ -129,6 +130,9 @@ STRIPE_PRO_PRICE_ID = os.environ.get("STRIPE_PRO_PRICE_ID", "")
 
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
+CLERK_SECRET_KEY = os.environ.get("CLERK_SECRET_KEY", "")
+CLERK_JWKS_URL = os.environ.get("CLERK_JWKS_URL", "")
+
 CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -162,8 +166,8 @@ PLAN_METADATA = [
     {
         "id": "basic",
         "name": "Basic",
-        "price_cents": 1200,
-        "price_display": "$12",
+        "price_cents": 999,
+        "price_display": "$9.99",
         "price_period": "/ month",
         "video_limit": 100,
         "highlighted": True,
@@ -176,8 +180,8 @@ PLAN_METADATA = [
     {
         "id": "pro",
         "name": "Pro",
-        "price_cents": 3900,
-        "price_display": "$39",
+        "price_cents": 2499,
+        "price_display": "$24.99",
         "price_period": "/ month",
         "video_limit": 9999,
         "highlighted": False,

@@ -10,9 +10,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    # Later can be added
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
+    clerk_id = models.CharField(max_length=255, null=True, blank=True, unique=True, db_index=True)
 
     objects = CustomUserManager()
 
