@@ -52,3 +52,7 @@ manage.py
 
 # example database
 drf_example
+
+.env
+.vscode
+*.zip
