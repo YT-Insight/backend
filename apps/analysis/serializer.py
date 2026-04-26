@@ -27,30 +27,35 @@ class ChannelSerializer(serializers.ModelSerializer):
             "subscriber_count",
             "video_count",
         )
+        read_only_fields = fields
 
 
 class AnalysisResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisResult
         fields = ("summary", "sentiment", "audience_type")
+        read_only_fields = fields
 
 
 class AnalysisTopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisTopic
         fields = ("topic", "relevance_score")
+        read_only_fields = fields
 
 
 class AnalysisQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisQuestion
         fields = ("question", "answer", "category")
+        read_only_fields = fields
 
 
 class AnalysisSuggestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisSuggestion
         fields = ("suggestion", "category")
+        read_only_fields = fields
 
 
 # ── Response serializers ───────────────────────────────────────────────────────
@@ -61,6 +66,7 @@ class AnalysisStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Analysis
         fields = ("id", "status", "videos_analyzed", "comments_analyzed", "error_message", "created_at")
+        read_only_fields = fields
 
 
 class AnalysisListSerializer(serializers.ModelSerializer):
@@ -78,6 +84,7 @@ class AnalysisListSerializer(serializers.ModelSerializer):
             "channel",
             "created_at",
         )
+        read_only_fields = fields
 
 
 class AnalysisDetailSerializer(serializers.ModelSerializer):
@@ -104,3 +111,4 @@ class AnalysisDetailSerializer(serializers.ModelSerializer):
             "suggestions",
             "created_at",
         )
+        read_only_fields = fields

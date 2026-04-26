@@ -20,7 +20,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "drf_spectacular",
 
     "apps.common",
     "apps.subscriptions",
@@ -85,6 +87,7 @@ REST_FRAMEWORK = {
         "user": "200/hour",
         "analysis": "10/hour",
     },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -92,6 +95,20 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "YT Insight API",
+    "DESCRIPTION": "YouTube channel analytics powered by AI.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {
+        "AnalysisStatusEnum": "apps.analysis.models.enums.StatusChoices",
+        "SubscriptionStatusEnum": [("active", "Active"), ("canceled", "Canceled"), ("past_due", "Past Due")],
+        "SubscriptionPlanEnum": [("free", "Free"), ("basic", "Basic"), ("pro", "Pro")],
+    },
 }
 
 LANGUAGE_CODE = "en-us"
@@ -125,3 +142,49 @@ PLAN_VIDEO_LIMITS = {
     "basic": 100,
     "pro": 9999,
 }
+
+# Plan display metadata served to the frontend via GET /api/subscriptions/plans/
+PLAN_METADATA = [
+    {
+        "id": "free",
+        "name": "Free",
+        "price_cents": 0,
+        "price_display": "$0",
+        "price_period": "forever",
+        "video_limit": 5,
+        "highlighted": False,
+        "features": [
+            "5 analyses / month",
+            "AI summary & sentiment",
+            "Topics & suggestions",
+        ],
+    },
+    {
+        "id": "basic",
+        "name": "Basic",
+        "price_cents": 1200,
+        "price_display": "$12",
+        "price_period": "/ month",
+        "video_limit": 100,
+        "highlighted": True,
+        "features": [
+            "100 analyses / month",
+            "Everything in Free",
+            "Priority processing",
+        ],
+    },
+    {
+        "id": "pro",
+        "name": "Pro",
+        "price_cents": 3900,
+        "price_display": "$39",
+        "price_period": "/ month",
+        "video_limit": 9999,
+        "highlighted": False,
+        "features": [
+            "Unlimited analyses",
+            "Everything in Basic",
+            "API access (coming soon)",
+        ],
+    },
+]

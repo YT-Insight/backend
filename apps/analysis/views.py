@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -25,6 +26,7 @@ class AnalysisCreateView(APIView):
     permission_classes = [IsAuthenticated, HasAnalysisQuota]
     throttle_classes = [AnalysisThrottle]
 
+    @extend_schema(request=AnalysisInputSerializer, responses={202: AnalysisStatusSerializer})
     def post(self, request):
         serializer = AnalysisInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
