@@ -16,7 +16,3 @@ DATABASES = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-# Tasks run synchronously in dev — no Celery worker needed
-CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_EAGER_PROPAGATES = True

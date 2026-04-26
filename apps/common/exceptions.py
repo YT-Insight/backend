@@ -25,6 +25,12 @@ class AIServiceError(APIException):
     default_code = "ai_service_error"
 
 
+class PipelineUnavailableError(APIException):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    default_detail = "Analysis pipeline is temporarily unavailable. Please try again in a moment."
+    default_code = "pipeline_unavailable"
+
+
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 

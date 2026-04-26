@@ -133,12 +133,12 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 CLERK_SECRET_KEY = os.environ.get("CLERK_SECRET_KEY", "")
 CLERK_JWKS_URL = os.environ.get("CLERK_JWKS_URL", "")
 
-CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "UTC"
+RABBITMQ_URL = os.environ.get("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+
+_REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+CELERY_BROKER_URL = _REDIS_URL
+CELERY_RESULT_BACKEND = _REDIS_URL
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # Per-plan usage limits (videos per month)
 PLAN_VIDEO_LIMITS = {
