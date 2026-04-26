@@ -41,7 +41,10 @@ def run_analysis_task(self, analysis_id: str):
             status=StatusChoices.FAILED,
             error_message=str(exc),
         )
-        raise self.retry(exc=exc)
+        # In eager mode (dev) re-executing via retry causes heap corruption
+        # from repeated thread pool + C-extension teardown in one thread.
+        if not settings.CELERY_TASK_ALWAYS_EAGER:
+            raise self.retry(exc=exc)
 
 
 # ── Pipeline stages ────────────────────────────────────────────────────────────
@@ -68,7 +71,7 @@ def _pipeline(analysis: Analysis) -> None:
         return
 
     # Stage 3 — Fetch comments concurrently ───────────────────────────────────
-    all_comment_texts = _fetch_all_comments(client, analysis_videos)
+    all_comment_texts = _fetch_all_comments(settings.YOUTUBE_API_KEY, analysis_videos)
 
     # Stage 4 — AI analysis ───────────────────────────────────────────────────
     ai_result = analyze_comments(all_comment_texts, {
@@ -122,12 +125,14 @@ def _upsert_videos(analysis: Analysis, channel: Channel, videos_data: list[dict]
     return analysis_videos
 
 
-def _fetch_all_comments(client: YouTubeClient, analysis_videos: list[AnalysisVideo]) -> list[str]:
+def _fetch_all_comments(api_key: str, analysis_videos: list[AnalysisVideo]) -> list[str]:
     all_texts: list[str] = []
 
     def fetch_one(av: AnalysisVideo) -> list[str]:
+        # Build a new client per thread — httplib2.Http is not thread-safe
+        thread_client = YouTubeClient(api_key=api_key)
         try:
-            raw = client.get_video_comments(av.video.youtube_video_id, max_results=300)
+            raw = thread_client.get_video_comments(av.video.youtube_video_id, max_results=300)
         except YouTubeAPIError as exc:
             logger.warning("Skipping comments for video %s: %s", av.video.youtube_video_id, exc)
             return []

@@ -49,10 +49,10 @@ class ClerkAuthentication(BaseAuthentication):
         if not clerk_user_id:
             raise AuthenticationFailed("Token missing sub claim")
 
-        user = self._get_or_create_user(clerk_user_id)
+        user = self._get_or_create_user(clerk_user_id, payload)
         return (user, None)
 
-    def _get_or_create_user(self, clerk_user_id: str):
+    def _get_or_create_user(self, clerk_user_id: str, payload: dict):
         from .models import User
 
         try:
@@ -60,11 +60,28 @@ class ClerkAuthentication(BaseAuthentication):
         except User.DoesNotExist:
             pass
 
-        user_data = _fetch_clerk_user(clerk_user_id)
-        email_entries = user_data.get("email_addresses", [])
-        email = email_entries[0].get("email_address", "") if email_entries else ""
-        first_name = user_data.get("first_name") or ""
-        last_name = user_data.get("last_name") or ""
+        # Try to get user info from JWT claims first (requires Clerk JWT template),
+        # then fall back to the Clerk backend API.
+        email = payload.get("email", "")
+        first_name = payload.get("first_name", "") or ""
+        last_name = payload.get("last_name", "") or ""
+
+        if not email:
+            try:
+                user_data = _fetch_clerk_user(clerk_user_id)
+                email_entries = user_data.get("email_addresses", [])
+                email = email_entries[0].get("email_address", "") if email_entries else ""
+                first_name = user_data.get("first_name") or ""
+                last_name = user_data.get("last_name") or ""
+            except Exception as exc:
+                raise AuthenticationFailed(
+                    f"Could not retrieve user profile from Clerk: {exc}. "
+                    "Configure a Clerk JWT template that includes 'email', "
+                    "'first_name', and 'last_name' claims."
+                )
+
+        if not email:
+            raise AuthenticationFailed("Could not determine user email from Clerk token.")
 
         # Link to existing account if same email, otherwise create new
         try:

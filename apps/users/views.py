@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,6 +9,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializer import RegisterSerializer, UserProfileSerializer, ChangePasswordSerializer
+from apps.subscriptions.models import Subscription, UsageLimit
 from apps.subscriptions.serializer import SubscriptionSerializer, UsageLimitSerializer
 
 
@@ -35,14 +38,26 @@ class MeView(APIView):
         })},
     )
     def get(self, request):
-        user_data = UserProfileSerializer(request.user).data
-        subscription_data = SubscriptionSerializer(request.user.subscription).data
-        usage_data = UsageLimitSerializer(request.user.usage_limit).data
+        user = request.user
+        now = timezone.now()
+        next_month = now.replace(
+            year=now.year + 1 if now.month == 12 else now.year,
+            month=1 if now.month == 12 else now.month + 1,
+            day=1, hour=0, minute=0, second=0, microsecond=0,
+        )
+        subscription, _ = Subscription.objects.get_or_create(user=user)
+        usage, _ = UsageLimit.objects.get_or_create(
+            user=user,
+            defaults={
+                "video_limit": settings.PLAN_VIDEO_LIMITS["free"],
+                "reset_at": next_month,
+            },
+        )
 
         return Response({
-            "user": user_data,
-            "subscription": subscription_data,
-            "usage": usage_data,
+            "user": UserProfileSerializer(user).data,
+            "subscription": SubscriptionSerializer(subscription).data,
+            "usage": UsageLimitSerializer(usage).data,
         })
 
     @extend_schema(
